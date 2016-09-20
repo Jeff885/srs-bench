@@ -51,10 +51,10 @@ StHttpClient::~StHttpClient(){
 int StHttpClient::DownloadString(HttpUrl* url, std::string* response){
     int ret = ERROR_SUCCESS;
     
-    if((ret = CheckUrl(url)) != ERROR_SUCCESS){
+    /*if((ret = CheckUrl(url)) != ERROR_SUCCESS){
         Error("http client check url failed. ret=%d", ret);
         return ret;
-    }
+    }*/
     
     if((ret = Connect(url)) != ERROR_SUCCESS){
         Error("http client connect url failed. ret=%d", ret);
