@@ -39,6 +39,7 @@ using namespace std;
 #include <htl_app_hls_load.hpp>
 
 #include <algorithm>
+#include <time.h>
 
 #define DEFAULT_TS_DURATION 10
 
@@ -174,17 +175,17 @@ int StHlsTask::DownloadTS(StHttpClient& client, M3u8TS& ts){
     
     Info("[TS] url=%s, duration=%.2f, delay=%.2f", url.GetUrl(), ts.duration, delay_seconds);
     statistic->OnSubTaskStart(GetId(), ts.ts_url);
-    
+    clock_t start = clock();
     if((ret = client.DownloadString(&url, NULL)) != ERROR_SUCCESS){
         statistic->OnSubTaskError(GetId(), (int)ts.duration);
             
         Error("http client download ts file %s failed. ret=%d", url.GetUrl(), ret);
         return ret;
     }
-    
+    clock_t ends = clock();
     int sleep_ms = StUtility::BuildRandomMTime((delay_seconds >= 0)? delay_seconds:ts.duration);
-    Trace("[TS] url=%s download, duration=%.2f, delay=%.2f, size=%"PRId64", sleep %dms", 
-        url.GetUrl(), ts.duration, delay_seconds, client.GetResponseHeader()->content_length, sleep_ms);
+    Trace("[TS] url=%s download, duration=%.2f, delay=%.2f, size=%"PRId64", sleep %dms, ts_timeused %lf", 
+        url.GetUrl(), ts.duration, delay_seconds, client.GetResponseHeader()->content_length, sleep_ms, (double)(ends - start)/ CLOCKS_PER_SEC);
     st_usleep(sleep_ms * 1000);
     
     statistic->OnSubTaskEnd(GetId(), (int)ts.duration);
